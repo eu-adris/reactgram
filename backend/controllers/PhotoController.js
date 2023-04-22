@@ -61,9 +61,104 @@ const deletePhoto = async (req, res) => {
     return
 }
 
+//get all photos
+const getAllPhotos = async (req, res) => {
+    const photos = await Photo.find({}).sort([["createdAt", -1]]).exec()
+
+    return res.status(200).json(photos)
+}
+
+//get user photos
+const getUserPhotos = async (req, res) => {
+    const { id } = req.params
+
+    const photos = await Photo.find({ userId: id }).sort([["createdAt", -1]]).exec()
+
+    return res.status(200).json(photos)
+}
+
+// get photo by id
+const getPhotoById = async (req, res) => {
+    const { id } = req.params
+
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id))
+
+    //check if photo exists
+    if (!photo) {
+        res.status(404).json({ errors: ["foto não encontrada"] })
+        return
+    }
+
+    res.status(200).json(photo)
+}
+
+//update a photo
+const updatePhoto = async (req, res) => {
+    const { id } = req.params
+    const { title } = req.body
+
+    const reqUser = req.user
+
+    const photo = await Photo.findById(id)
+
+    //check if photo exists
+    if (!photo) {
+        res.status(404).json({ errors: ["foto não encontrada"] })
+        return
+    }
+
+    //check if  photo belongs to user
+    if (!photo.userId.equals(reqUser._id)) {
+        res.status(422).json({ errors: ["Ocorreu um erro, por favor tente novamente mais tarde"], })
+        return
+    }
+
+    if (title) {
+        photo.title = title
+    }
+
+    await photo.save()
+
+    res.status(200).json({ photo, message: "foto atualizada com sucesso!" })
+}
+//like functionality
+const likePhoto = async (req, res) => {
+    const { id } = req.params
+    const reqUser = req.user
+
+    const photo = await Photo.findById(id)
+
+
+    // check if photo exists
+    if (!photo) {
+        res.status(404).json({ errors: ["foto não encontrada"] })
+        return
+    }
+
+    // check if user alredy  liked a photo
+    if (photo.likes.includes(reqUser._id)) {
+        res.status(422).json({ errors: ["Você já curtiu esta foto"] })
+        return
+    }
+
+    //put user id in likes array
+    photo.likes.push(reqUser._id)
+
+    photo.save()
+
+    res.status(200).json({ photo: id, userId: reqUser._id, message: "A foto foi curtida" })
+
+
+}
+
 
 
 module.exports = {
     insertPhoto,
     deletePhoto,
+    getAllPhotos,
+    getUserPhotos,
+    getPhotoById,
+    updatePhoto,
+    likePhoto,
 }
