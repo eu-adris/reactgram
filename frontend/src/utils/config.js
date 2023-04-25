@@ -20,7 +20,8 @@ export const requestConfig = (method, data, token = null, image = null) => {
         config = {
             method,
             body: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            mode: 'no-cors'
         }
     }
 
