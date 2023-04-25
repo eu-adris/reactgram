@@ -8,8 +8,22 @@ import { useState, useEffect } from "react"
 
 const Register = () => {
 
+  const [name, setname] = useState('');
+  const [email, setemail] = useState('');
+  const [password, setpassword] = useState('');
+  const [confirmPassword, setconfirmPassword] = useState('');
+
   const handleSubmit = (e) =>{
     e.preventDefault()
+
+    const user = {
+      name,
+      email,
+      password,
+      confirmPassword
+    }
+
+    console.log(user)
   }
 
   return (
@@ -17,10 +31,10 @@ const Register = () => {
       <h2>ReactGram</h2>
       <p className="subtitle">Cadastre-se para ver as fotos dos seus amigos</p>
       <form onSubmit={handleSubmit}>
-      <input type="text" placeholder="Nome" />
-      <input type="email" placeholder="E-mail" />
-      <input type="password" placeholder="senha" />
-      <input type="password" placeholder="Confirme a senha" />
+      <input type="text" placeholder="Nome" onChange={(e) => setname(e.target.value)} value={name || "" }/>
+      <input type="email" placeholder="E-mail" onChange={(e) => setemail(e.target.value)} value={email || "" } />
+      <input type="password" placeholder="senha" onChange={(e) => setpassword(e.target.value)} value={password || "" } />
+      <input type="password" placeholder="Confirme a senha" onChange={(e) => setconfirmPassword(e.target.value)} value={confirmPassword || "" } />
       <input type="submit" value='cadastrar'/>
       </form>
       <p>
